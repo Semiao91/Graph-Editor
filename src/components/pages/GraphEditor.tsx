@@ -1,5 +1,6 @@
 import GraphCanvas from '../organisms/GraphCanvas';
 import Header from '../organisms/Header';
+import ZoomControls from '../organisms/ZoomControls';
 
 export default function GraphEditor() {
     const handleNewGraph = () => {
@@ -22,6 +23,18 @@ export default function GraphEditor() {
         console.log('Add node');
     };
 
+    const handleZoomIn = () => {
+        console.log('Zoom in');
+    };
+
+    const handleZoomOut = () => {
+        console.log('Zoom out');
+    };
+
+    const handleFitView = () => {
+        console.log('Fit view');
+    };
+
     return (
         <>
             <Header
@@ -31,11 +44,20 @@ export default function GraphEditor() {
                 onLoadGraph={handleLoadGraph}
                 onClearGraph={handleClearGraph}
                 isDirty={false}
+                fixed={true}
             />
 
             <GraphCanvas
-                height="500px"
+                fullScreen={true}
+                headerHeight={60}
                 onAddNode={handleAddNode}
+            />
+
+            <ZoomControls
+                onZoomIn={handleZoomIn}
+                onZoomOut={handleZoomOut}
+                onFitView={handleFitView}
+                zoomLevel={1}
             />
         </>
     );

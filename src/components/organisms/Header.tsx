@@ -3,8 +3,8 @@ import {
     LoadingOutlined,
     SaveOutlined
 } from '@ant-design/icons';
-import { Typography } from 'antd';
-import { Button, IconButton, Toolbar } from '../atoms';
+import { Space, Typography } from 'antd';
+import { Button, IconButton } from '../atoms';
 
 const { Title } = Typography;
 
@@ -15,6 +15,7 @@ export interface HeaderProps {
     onLoadGraph?: () => void;
     onClearGraph?: () => void;
     isDirty?: boolean;
+    fixed?: boolean;
 }
 
 export default function Header({
@@ -23,38 +24,57 @@ export default function Header({
     onSaveGraph,
     onLoadGraph,
     onClearGraph,
-    isDirty
+    isDirty,
+    fixed = false
 }: HeaderProps) {
+    const headerStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 24px',
+        backgroundColor: '#ffffff',
+        borderBottom: '1px solid #f0f0f0',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+        zIndex: 1000,
+        ...(fixed && {
+            position: 'fixed' as const,
+            top: 0,
+            left: 0,
+            right: 0,
+            width: '100%',
+        }),
+    };
+
     return (
-        <>
-            <Title level={1} style={{ marginBottom: '24px' }}>
-                {title} {isDirty && '*'}
+        <div style={headerStyle}>
+            <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+                {title} {isDirty && <span style={{ color: '#f59e0b' }}>*</span>}
             </Title>
 
-            <Toolbar style={{ marginBottom: '24px' }}>
-                <Button type="primary" onClick={onNewGraph}>
+            <Space size="small">
+                <Button type="primary" onClick={onNewGraph} size="small">
                     New Graph
                 </Button>
                 <IconButton
                     icon={<SaveOutlined />}
                     tooltip="Save Graph"
-                    type="default"
+                    size="small"
                     onClick={onSaveGraph}
                 />
                 <IconButton
                     icon={<LoadingOutlined />}
                     tooltip="Load Graph"
-                    type="default"
+                    size="small"
                     onClick={onLoadGraph}
                 />
                 <IconButton
                     icon={<DeleteOutlined />}
                     tooltip="Clear Graph"
-                    type="default"
+                    size="small"
                     danger
                     onClick={onClearGraph}
                 />
-            </Toolbar>
-        </>
+            </Space>
+        </div>
     );
 }
