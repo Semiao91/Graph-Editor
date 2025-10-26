@@ -1,15 +1,22 @@
-import type { Edge } from "../types/edge";
-import type { Node } from "../types/node";
 
 export interface GraphActions {
+    // React Flow handlers (following their docs pattern)
+    onNodesChange: (changes: any[]) => void;
+    onEdgesChange: (changes: any[]) => void;
+    onConnect: (connection: any) => void;
+    onSelectionChange: (params: { nodes: GraphNode[]; edges: GraphEdge[] }) => void;
+
     // Node actions
-    addNode: (node: Omit<GraphNode, 'id'>) => void;
+    addNode: (node: Omit<GraphNode, 'id'>) => GraphNode;
+    setNodes: (nodes: GraphNode[]) => void;
     updateNode: (id: string, updates: Partial<GraphNode['data']>) => void;
     deleteNode: (id: string) => void;
     setSelectedNode: (id: string | null) => void;
+    setSelectedNodes: (selectedNodes: GraphNode[]) => void;
 
     // Edge actions
-    addEdge: (edge: Omit<GraphEdge, 'id'>) => void;
+    addEdge: (edge: Omit<GraphEdge, 'id'>) => GraphEdge;
+    setEdges: (edges: GraphEdge[]) => void;
     updateEdge: (id: string, updates: Partial<GraphEdge['data']>) => void;
     deleteEdge: (id: string) => void;
     setSelectedEdge: (id: string | null) => void;
@@ -24,10 +31,31 @@ export interface GraphActions {
     markClean: () => void;
 }
 
-export interface GraphNode extends Node {
+export interface GraphHandlers {
+    onNodeClick?: (event: React.MouseEvent, node: any) => void;
+    onNodeDrag?: (event: React.MouseEvent, node: any) => void;
+    onPaneClick?: () => void;
+    onConnect?: (connection: any) => void;
+    onConnectEnd?: (
+        event: MouseEvent | TouchEvent,
+        connectionState: { fromNode: { id: string }; isValid: boolean },
+        screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
+    ) => void;
+    onNodesChange?: (changes: any[]) => void;
+    onEdgesChange?: (changes: any[]) => void;
+    onEdgeClick?: (event: React.MouseEvent, edge: any) => void;
+    onNodeDragStart?: (event: React.MouseEvent, node: any) => void;
+    onNodeDragStop?: (event: React.MouseEvent, node: any) => void;
+}
+
+export interface GraphNode {
     id: string;
-    type: 'custom';
+    type: string;
     position: { x: number; y: number };
+    style?: {
+        width?: number;
+        height?: number;
+    };
     data: {
         label: string;
         color: string;
@@ -35,11 +63,11 @@ export interface GraphNode extends Node {
     };
 }
 
-export interface GraphEdge extends Edge {
+export interface GraphEdge {
     id: string;
     source: string;
     target: string;
-    type?: 'default' | 'straight' | 'step' | 'smoothstep';
+    type?: string;
     data?: {
         weight?: number;
         isDirected?: boolean;
@@ -51,6 +79,7 @@ export interface GraphState {
     edges: GraphEdge[];
     selectedNodeId: string | null;
     selectedEdgeId: string | null;
+    selectedNodes: GraphNode[];
     isOnline: boolean;
     isDirty: boolean;
 }

@@ -1,110 +1,187 @@
+import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
-import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
+import { createWithEqualityFn } from 'zustand/traditional';
 import type { GraphActions, GraphEdge, GraphNode, GraphState } from '../interfaces/graph';
 
-export const useGraphStore = create<GraphState & GraphActions>((set) => ({
-    // Initial state
-    nodes: [],
-    edges: [],
-    selectedNodeId: null,
-    selectedEdgeId: null,
-    isOnline: true,
-    isDirty: false,
-
-    // Node actions
-    addNode: (nodeData) => {
-        const id = uuidv4();
-        const newNode: GraphNode = { ...nodeData, id };
-        set((state) => ({
-            nodes: [...state.nodes, newNode],
-            isDirty: true,
-        }));
-    },
-
-    updateNode: (id, updates) => {
-        set((state) => ({
-            nodes: state.nodes.map((node) =>
-                node.id === id ? { ...node, data: { ...node.data, ...updates } } : node
-            ),
-            isDirty: true,
-        }));
-    },
-
-    deleteNode: (id) => {
-        set((state) => ({
-            nodes: state.nodes.filter((node) => node.id !== id),
-            edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id),
-            selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
-            isDirty: true,
-        }));
-    },
-
-    setSelectedNode: (id) => {
-        set({ selectedNodeId: id, selectedEdgeId: null });
-    },
-
-    // Edge actions
-    addEdge: (edgeData) => {
-        const id = uuidv4();
-        const newEdge: GraphEdge = { ...edgeData, id };
-        set((state) => ({
-            edges: [...state.edges, newEdge],
-            isDirty: true,
-        }));
-    },
-
-    updateEdge: (id, updates) => {
-        set((state) => ({
-            edges: state.edges.map((edge) =>
-                edge.id === id ? { ...edge, data: { ...edge.data, ...updates } } : edge
-            ),
-            isDirty: true,
-        }));
-    },
-
-    deleteEdge: (id) => {
-        set((state) => ({
-            edges: state.edges.filter((edge) => edge.id !== id),
-            selectedEdgeId: state.selectedEdgeId === id ? null : state.selectedEdgeId,
-            isDirty: true,
-        }));
-    },
-
-    setSelectedEdge: (id) => {
-        set({ selectedEdgeId: id, selectedNodeId: null });
-    },
-
-    // Graph actions
-    clearGraph: () => {
-        set({
+export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
+    devtools(
+        (set, get) => ({
+            // Initial state
             nodes: [],
             edges: [],
             selectedNodeId: null,
             selectedEdgeId: null,
-            isDirty: true,
-        });
-    },
-
-    loadGraph: (nodes, edges) => {
-        set({
-            nodes,
-            edges,
-            selectedNodeId: null,
-            selectedEdgeId: null,
+            selectedNodes: [],
+            isOnline: true,
             isDirty: false,
-        });
-    },
 
-    // App state
-    setOnlineStatus: (isOnline) => {
-        set({ isOnline });
-    },
+            // React Flow handlers (following their docs pattern)
+            onNodesChange: (changes) => {
+                set({
+                    nodes: applyNodeChanges(changes, get().nodes),
+                    isDirty: true,
+                }, false, 'onNodesChange');
+            },
 
-    markDirty: () => {
-        set({ isDirty: true });
-    },
+            onEdgesChange: (changes) => {
+                set({
+                    edges: applyEdgeChanges(changes, get().edges),
+                    isDirty: true,
+                }, false, 'onEdgesChange');
+            },
 
-    markClean: () => {
-        set({ isDirty: false });
-    },
-}));
+            onConnect: (connection) => {
+                if (connection.source && connection.target) {
+                    const id = uuidv4();
+                    const newEdge: GraphEdge = {
+                        id,
+                        source: connection.source,
+                        target: connection.target,
+                        type: 'default',
+                        data: {
+                            weight: 1,
+                            isDirected: true,
+                        },
+                    };
+                    set({
+                        edges: [...get().edges, newEdge],
+                        isDirty: true,
+                    }, false, 'onConnect');
+                }
+            },
+
+            // Node actions
+            addNode: (nodeData) => {
+                const id = uuidv4();
+                const newNode: GraphNode = {
+                    ...nodeData,
+                    id,
+                    // Add default dimensions for resizable nodes if not provided
+                    style: nodeData.style || {
+                        width: 150,
+                        height: 80,
+                    }
+                };
+                set({
+                    nodes: [...get().nodes, newNode],
+                    isDirty: true,
+                }, false, 'addNode');
+                return newNode;
+            },
+
+            updateNode: (id, updates) => {
+                set({
+                    nodes: get().nodes.map((node) =>
+                        node.id === id ? { ...node, data: { ...node.data, ...updates } } : node
+                    ),
+                    isDirty: true,
+                }, false, `updateNode: ${id}`);
+            },
+
+            setNodes: (nodes) => {
+                set({
+                    nodes,
+                    isDirty: true,
+                }, false, 'setNodes');
+            },
+
+            setEdges: (edges) => {
+                set({
+                    edges,
+                    isDirty: true,
+                }, false, 'setEdges');
+            },
+
+            deleteNode: (id) => {
+                set((state) => ({
+                    nodes: state.nodes.filter((node) => node.id !== id),
+                    edges: state.edges.filter((edge) => edge.source !== id && edge.target !== id),
+                    selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
+                    isDirty: true,
+                }), false, `deleteNode: ${id}`);
+            },
+
+            setSelectedNode: (id) => {
+                set({ selectedNodeId: id, selectedEdgeId: null }, false, 'setSelectedNode');
+            },
+
+            setSelectedNodes: (selectedNodes) => {
+                set({ selectedNodes }, false, 'setSelectedNodes');
+            },
+
+            onSelectionChange: (params) => {
+                set({ selectedNodes: params.nodes }, false, 'onSelectionChange');
+            },
+
+            // Edge actions
+            addEdge: (edgeData) => {
+                const id = uuidv4();
+                const newEdge: GraphEdge = { ...edgeData, id };
+                set({
+                    edges: [...get().edges, newEdge],
+                    isDirty: true,
+                }, false, 'addEdge');
+                return newEdge;
+            },
+
+            updateEdge: (id, updates) => {
+                set({
+                    edges: get().edges.map((edge) =>
+                        edge.id === id ? { ...edge, data: { ...edge.data, ...updates } } : edge
+                    ),
+                    isDirty: true,
+                }, false, `updateEdge: ${id}`);
+            },
+
+            deleteEdge: (id) => {
+                set({
+                    edges: get().edges.filter((edge) => edge.id !== id),
+                    selectedEdgeId: get().selectedEdgeId === id ? null : get().selectedEdgeId,
+                    isDirty: true,
+                }, false, `deleteEdge: ${id}`);
+            },
+
+            setSelectedEdge: (id) => {
+                set({ selectedEdgeId: id, selectedNodeId: null }, false, 'setSelectedEdge');
+            },
+
+            // Graph actions
+            clearGraph: () => {
+                set({
+                    nodes: [],
+                    edges: [],
+                    selectedNodeId: null,
+                    selectedEdgeId: null,
+                    isDirty: true,
+                }, false, 'clearGraph');
+            },
+
+            loadGraph: (nodes, edges) => {
+                set({
+                    nodes,
+                    edges,
+                    selectedNodeId: null,
+                    selectedEdgeId: null,
+                    isDirty: false,
+                }, false, 'loadGraph');
+            },
+
+            // App state
+            setOnlineStatus: (isOnline) => {
+                set({ isOnline }, false, 'setOnlineStatus');
+            },
+
+            markDirty: () => {
+                set({ isDirty: true }, false, 'markDirty');
+            },
+
+            markClean: () => {
+                set({ isDirty: false }, false, 'markClean');
+            },
+        }),
+        { name: 'graph-editor-store' }
+    ),
+    shallow
+);

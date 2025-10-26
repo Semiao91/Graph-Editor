@@ -1,29 +1,80 @@
-import { Background, Controls, ReactFlow } from "@xyflow/react";
-import { useEdge } from "../../hooks/useEdge";
-import { useNode } from "../../hooks/useNode";
+import { Background, Controls, ReactFlow, useReactFlow } from "@xyflow/react";
+import { useCallback, useMemo } from "react";
+import type { GraphHandlers } from "../../interfaces/graph";
+import { useGraphStore } from "../../store";
+import ResizableNode from "../atoms/ResizableNode";
 
-export const GraphCanvasInner = () => {
-    const { nodes, selectNode } = useNode();
-    const { edges, onConnect } = useEdge();
+interface GraphCanvasInnerProps {
+    handlers?: GraphHandlers;
+}
 
-    const onNodeClick = (_event: React.MouseEvent, node: any) => {
-        selectNode(node.id);
-    };
+export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
+    const {
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        onConnect,
+        onSelectionChange,
+        setSelectedNode
+    } = useGraphStore();
 
-    const onPaneClick = () => {
-        // Deselect when clicking on empty space
-        selectNode(null);
-    };
+    const { screenToFlowPosition } = useReactFlow();
+
+    const nodeTypes = useMemo(() => ({
+        ResizableNode: ResizableNode,
+    }), []);
+
+    const onNodeClick = useCallback((_event: React.MouseEvent, node: any) => {
+        setSelectedNode(node.id);
+        console.log('Node selected:', node.id);
+    }, [setSelectedNode]);
+
+    const onPaneClick = useCallback(() => {
+        setSelectedNode(null);
+    }, [setSelectedNode]);
+
+    const onConnectEnd = useCallback((event: any, connectionState: any) => {
+        if (handlers?.onConnectEnd) {
+            handlers.onConnectEnd(event, connectionState, screenToFlowPosition);
+        }
+    }, [handlers, screenToFlowPosition]);
+
+    const onEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
+        setSelectedNode(null);
+        console.log('Edge clicked:', edge.id);
+    }, [setSelectedNode]);
+
+    const defaultEdgeOptions = useMemo(() => ({
+        type: 'default',
+        style: { stroke: '#b1b1b7' }
+    }), []);
+
+    const snapGrid = useMemo(() => ([20, 20] as [number, number]), []);
 
     return (
         <ReactFlow
             nodes={nodes}
             edges={edges}
+            nodeTypes={nodeTypes}
             onConnect={onConnect}
+            onConnectEnd={onConnectEnd}
             onNodeClick={onNodeClick}
             onPaneClick={onPaneClick}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onEdgeClick={onEdgeClick}
+            onSelectionChange={onSelectionChange}
+            defaultEdgeOptions={defaultEdgeOptions}
+            snapGrid={snapGrid}
+            snapToGrid={true}
+            nodesDraggable={true}
+            nodesConnectable={true}
+            elementsSelectable={true}
+            selectNodesOnDrag={false}
             fitView
             className="react-flow-canvas"
+            proOptions={{ hideAttribution: true }}
         >
             <Background
                 color="#13161b"

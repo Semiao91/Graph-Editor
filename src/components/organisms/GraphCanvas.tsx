@@ -3,19 +3,22 @@ import {
     ReactFlowProvider
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { FloatingActionButton } from '../atoms';
+import type { GraphHandlers } from '../../interfaces/graph';
+import FloatingActionButton from '../atoms/FloatingActionButton';
 import { GraphCanvasInner } from '../molecules/GraphCanvasInner';
 
 export interface GraphCanvasProps {
     fullScreen?: boolean;
     headerHeight?: number;
     onAddNode?: () => void;
+    handlers?: GraphHandlers;
 }
 
 export default function GraphCanvas({
     fullScreen = false,
     headerHeight = 60,
     onAddNode,
+    handlers,
 }: GraphCanvasProps) {
     const canvasStyle = fullScreen
         ? {
@@ -35,7 +38,7 @@ export default function GraphCanvas({
     return (
         <div style={canvasStyle}>
             <ReactFlowProvider>
-                <GraphCanvasInner />
+                <GraphCanvasInner handlers={handlers} />
             </ReactFlowProvider>
 
             <FloatingActionButton

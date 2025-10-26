@@ -3,8 +3,8 @@ import {
     LoadingOutlined,
     SaveOutlined
 } from '@ant-design/icons';
-import { Space, Typography } from 'antd';
-import { Button, IconButton } from '../atoms';
+import { Button, Space, Typography } from 'antd';
+import IconButton from '../atoms/IconButton';
 
 const { Title } = Typography;
 

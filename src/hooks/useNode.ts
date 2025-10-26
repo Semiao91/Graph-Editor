@@ -11,7 +11,6 @@ export const useNode = () => {
         selectedNodeId,
     } = useGraphStore();
 
-    // Generate a new node at a specific position
     const createNode = useCallback((position?: { x: number; y: number }) => {
         const defaultPosition = position || {
             x: Math.random() * 400 + 100,
@@ -19,29 +18,26 @@ export const useNode = () => {
         };
 
         const newNode = {
-            type: 'custom' as const,
+            type: 'ResizableNode',
             position: defaultPosition,
             data: {
                 label: `Node ${nodes.length + 1}`,
-                color: '#1890ff',
+                color: '#ffffff',
                 weight: 1,
             },
         };
 
-        addNode(newNode);
-        return newNode;
+        return addNode(newNode);
     }, [addNode, nodes.length]);
 
-    // Create node at center of viewport
     const createNodeAtCenter = useCallback(() => {
         const centerPosition = {
-            x: window.innerWidth / 2 - 75, // Offset by approximate node width
-            y: window.innerHeight / 2 - 25, // Offset by approximate node height
+            x: 400, // Use fixed center instead of window calculation
+            y: 300,
         };
         return createNode(centerPosition);
     }, [createNode]);
 
-    // Create node at mouse position (for click events)
     const createNodeAtMouse = useCallback((event: React.MouseEvent) => {
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
         const position = {
@@ -51,7 +47,6 @@ export const useNode = () => {
         return createNode(position);
     }, [createNode]);
 
-    // Update node properties
     const updateNodeData = useCallback((nodeId: string, updates: Partial<{
         label: string;
         color: string;
@@ -60,7 +55,6 @@ export const useNode = () => {
         updateNode(nodeId, updates);
     }, [updateNode]);
 
-    // Delete selected node or specific node
     const removeNode = useCallback((nodeId?: string) => {
         const targetId = nodeId || selectedNodeId;
         if (targetId) {
