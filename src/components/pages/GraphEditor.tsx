@@ -1,38 +1,32 @@
+import { useNode } from '../../hooks/useNode';
+import { useGraphStore } from '../../store';
 import GraphCanvas from '../organisms/GraphCanvas';
 import Header from '../organisms/Header';
-import ZoomControls from '../organisms/ZoomControls';
 
 export default function GraphEditor() {
+    const { createNodeAtCenter } = useNode();
+    const { clearGraph, isDirty } = useGraphStore();
+
     const handleNewGraph = () => {
-        console.log('New graph');
+        clearGraph();
     };
 
     const handleSaveGraph = () => {
         console.log('Save graph');
+        // TODO: Implement save functionality
     };
 
     const handleLoadGraph = () => {
         console.log('Load graph');
+        // TODO: Implement load functionality
     };
 
     const handleClearGraph = () => {
-        console.log('Clear graph');
+        clearGraph();
     };
 
     const handleAddNode = () => {
-        console.log('Add node');
-    };
-
-    const handleZoomIn = () => {
-        console.log('Zoom in');
-    };
-
-    const handleZoomOut = () => {
-        console.log('Zoom out');
-    };
-
-    const handleFitView = () => {
-        console.log('Fit view');
+        createNodeAtCenter();
     };
 
     return (
@@ -43,7 +37,7 @@ export default function GraphEditor() {
                 onSaveGraph={handleSaveGraph}
                 onLoadGraph={handleLoadGraph}
                 onClearGraph={handleClearGraph}
-                isDirty={false}
+                isDirty={isDirty}
                 fixed={true}
             />
 
@@ -53,12 +47,6 @@ export default function GraphEditor() {
                 onAddNode={handleAddNode}
             />
 
-            <ZoomControls
-                onZoomIn={handleZoomIn}
-                onZoomOut={handleZoomOut}
-                onFitView={handleFitView}
-                zoomLevel={1}
-            />
         </>
     );
 }
