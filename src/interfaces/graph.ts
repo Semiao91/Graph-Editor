@@ -50,6 +50,12 @@ export interface GraphHandlers {
     onNodeDragStop?: (event: React.MouseEvent, node: any) => void;
 }
 
+export interface HandleConfig {
+    id: string;
+    position: 'top' | 'right' | 'bottom' | 'left';
+    type: 'source' | 'target';
+}
+
 export interface GraphNode {
     id: string;
     type: string;
@@ -62,6 +68,7 @@ export interface GraphNode {
         label: string;
         color: string;
         weight: number;
+        handles?: HandleConfig[];
         style?: React.CSSProperties;
     };
 }
@@ -70,11 +77,14 @@ export interface GraphEdge {
     id: string;
     source: string;
     target: string;
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
     type?: string;
     data?: {
         weight?: number;
         isDirected?: boolean;
         label?: string;
+        color?: string;
     };
 }
 

@@ -10,8 +10,21 @@ export type Node = {
 }
 
 export type NodeTypes = {
-    ResizableNode: string,
+    ResizableNode: ResizableNodeData,
     ResizableNodeSelected: string,
     CustomResizerNode: string,
     Default: string,
 }
+
+export type HandleConfig = {
+    id: string;
+    position: 'top' | 'right' | 'bottom' | 'left';
+    type: 'source' | 'target';
+};
+
+export type ResizableNodeData = {
+    label: string;
+    color?: string;
+    weight?: number;
+    handles?: HandleConfig[];
+};

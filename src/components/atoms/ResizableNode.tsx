@@ -1,14 +1,22 @@
 import { Handle, NodeResizer, Position } from '@xyflow/react';
 import { memo } from 'react';
-
-type ResizableNodeData = {
-    label: string;
-    color?: string;
-    weight?: number;
-};
+import type { ResizableNodeData } from '../../types/node';
 
 const ResizableNode = ({ data, selected }: { data: ResizableNodeData; selected: boolean }) => {
     const nodeData = data as ResizableNodeData;
+    const handles = nodeData.handles || [];
+
+    // Map string position to ReactFlow Position enum
+    const getPosition = (pos: string) => {
+        switch (pos) {
+            case 'top': return Position.Top;
+            case 'right': return Position.Right;
+            case 'bottom': return Position.Bottom;
+            case 'left': return Position.Left;
+            default: return Position.Top;
+        }
+    };
+
     return (
         <>
             <NodeResizer
@@ -22,9 +30,23 @@ const ResizableNode = ({ data, selected }: { data: ResizableNodeData; selected: 
                     borderRadius: '50%',
                 }}
             />
-            <Handle type="target" position={Position.Top} />
-            <Handle type="target" position={Position.Left} />
 
+            {handles.map((handle) => (
+                <Handle
+                    key={handle.id}
+                    id={handle.id}
+                    type={handle.type}
+                    position={getPosition(handle.position)}
+                    style={{
+                        background: handle.type === 'source' ? '#1890ff' : '#52c41a',
+                        border: '2px solid #fff',
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        cursor: 'crosshair',
+                    }}
+                />
+            ))}
             <div
                 style={{
                     padding: '12px',
@@ -48,8 +70,6 @@ const ResizableNode = ({ data, selected }: { data: ResizableNodeData; selected: 
                 </div>
             </div>
 
-            <Handle type="source" position={Position.Bottom} />
-            <Handle type="source" position={Position.Right} />
         </>
     );
 };

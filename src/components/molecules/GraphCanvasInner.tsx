@@ -1,8 +1,10 @@
-import { Background, Controls, ReactFlow, useReactFlow } from "@xyflow/react";
+import { Background, Controls, MarkerType, ReactFlow, useReactFlow } from "@xyflow/react";
 import { useCallback, useMemo } from "react";
 import type { GraphHandlers } from "../../interfaces/graph";
 import { useGraphStore } from "../../store";
-import ResizableNode from "../atoms/ResizableNode";
+import CustomConnectionLine from "../atoms/CustomConnectionLine";
+import { CustomNode } from "../atoms/CustomNode";
+import FloatingEdge from "../atoms/FloatingEdge";
 
 interface GraphCanvasInnerProps {
     handlers?: GraphHandlers;
@@ -24,7 +26,12 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
     const { screenToFlowPosition } = useReactFlow();
 
     const nodeTypes = useMemo(() => ({
-        ResizableNode: ResizableNode,
+        custom: CustomNode,
+    }), []);
+
+    const edgeTypes = useMemo(() => ({
+        floating: FloatingEdge,
+        default: FloatingEdge,
     }), []);
 
     const onNodeClick = useCallback((_event: React.MouseEvent, node: any) => {
@@ -49,17 +56,26 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
     }, [setSelectedEdge]);
 
     const defaultEdgeOptions = useMemo(() => ({
-        type: 'default',
+        type: 'floating',
+        markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: '#b1b1b7',
+        },
         style: { stroke: '#b1b1b7' }
     }), []);
 
     const snapGrid = useMemo(() => ([20, 20] as [number, number]), []);
+
+    const connectionLineStyle = useMemo(() => ({
+        stroke: '#b1b1b7',
+    }), []);
 
     return (
         <ReactFlow
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
             onNodeClick={onNodeClick}
@@ -69,6 +85,8 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
             onEdgeClick={onEdgeClick}
             onSelectionChange={onSelectionChange}
             defaultEdgeOptions={defaultEdgeOptions}
+            connectionLineComponent={CustomConnectionLine}
+            connectionLineStyle={connectionLineStyle}
             snapGrid={snapGrid}
             snapToGrid={isSnap}
             nodesDraggable={true}

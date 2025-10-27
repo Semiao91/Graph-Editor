@@ -19,12 +19,12 @@ export const useNode = () => {
         };
 
         const newNode = {
-            type: 'ResizableNode',
+            type: 'custom',
             position: defaultPosition,
             data: {
                 label: ``,
                 color: '#ffffff',
-                weight: 1,
+                weight: 20,
             },
         };
 

@@ -40,12 +40,16 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
                         id,
                         source: connection.source,
                         target: connection.target,
-                        type: 'default',
+                        sourceHandle: connection.sourceHandle,
+                        targetHandle: connection.targetHandle,
+                        type: 'floating',
                         data: {
                             weight: 1,
                             isDirected: true,
+                            color: '#b1b1b7',
                         },
                     };
+                    console.log('Creating edge:', newEdge);
                     set({
                         edges: [...get().edges, newEdge],
                         isDirty: true,
@@ -59,7 +63,6 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
                 const newNode: GraphNode = {
                     ...nodeData,
                     id,
-                    // Add default dimensions for resizable nodes if not provided
                     style: nodeData.style || {
                         width: 150,
                         height: 80,
@@ -78,21 +81,25 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
                         if (node.id === id) {
                             const updatedNode = { ...node };
 
-                            const hasDataUpdates = 'label' in updates || 'color' in updates || 'weight' in updates;
-                            if (hasDataUpdates) {
+                            if ('label' in updates || 'color' in updates || 'weight' in updates || 'handles' in updates) {
                                 updatedNode.data = {
                                     ...node.data,
                                     ...(updates.label !== undefined && { label: updates.label }),
                                     ...(updates.color !== undefined && { color: updates.color }),
-                                    ...(updates.weight !== undefined && { weight: updates.weight })
+                                    ...(updates.weight !== undefined && { weight: updates.weight }),
+                                    ...(updates.handles !== undefined && { handles: [...(updates.handles || [])] })
                                 };
                             }
 
-                            // Handle style updates
+                            // Handle style updates (width, height)
                             if (updates.style) {
-                                updatedNode.style = { ...node.style, ...updates.style };
+                                updatedNode.style = {
+                                    ...node.style,
+                                    ...updates.style
+                                };
                             }
 
+                            console.log('Updated node:', updatedNode);
                             return updatedNode;
                         }
                         return node;
@@ -139,7 +146,11 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
             // Edge actions
             addEdge: (edgeData) => {
                 const id = uuidv4();
-                const newEdge: GraphEdge = { ...edgeData, id };
+                const newEdge: GraphEdge = {
+                    ...edgeData,
+                    id,
+                    type: edgeData.type || 'floating',
+                };
                 set({
                     edges: [...get().edges, newEdge],
                     isDirty: true,
@@ -149,9 +160,26 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
 
             updateEdge: (id, updates) => {
                 set({
-                    edges: get().edges.map((edge) =>
-                        edge.id === id ? { ...edge, data: { ...edge.data, ...updates } } : edge
-                    ),
+                    edges: get().edges.map((edge) => {
+                        if (edge.id === id) {
+                            const updatedEdge = { ...edge };
+
+                            // Handle data field updates
+                            if (updates && ('label' in updates || 'color' in updates || 'weight' in updates || 'isDirected' in updates)) {
+                                updatedEdge.data = {
+                                    ...edge.data,
+                                    ...(updates.label !== undefined && { label: updates.label }),
+                                    ...(updates.color !== undefined && { color: updates.color }),
+                                    ...(updates.weight !== undefined && { weight: updates.weight }),
+                                    ...(updates.isDirected !== undefined && { isDirected: updates.isDirected })
+                                };
+                            }
+
+                            console.log('Updated edge:', updatedEdge);
+                            return updatedEdge;
+                        }
+                        return edge;
+                    }),
                     isDirty: true,
                 }, false, `updateEdge: ${id}`);
             },

@@ -43,7 +43,7 @@ export const NodePropertiesOverlay = memo(() => {
             const nodeValues = {
                 label: selectedNode.data?.label || '',
                 color: selectedNode.data?.color || '#f8f9fa',
-                weight: selectedNode.data?.weight || 0,
+                weight: selectedNode.data?.weight ?? 20,
                 width: selectedNode.style?.width || 150,
                 height: selectedNode.style?.height || 80,
             };
@@ -53,7 +53,8 @@ export const NodePropertiesOverlay = memo(() => {
             const edgeValues = {
                 weight: selectedEdge.data?.weight || 1,
                 label: selectedEdge.data?.label || '',
-                isDirected: selectedEdge.data?.isDirected || false,
+                color: selectedEdge.data?.color || '#b1b1b7',
+                isDirected: selectedEdge.data?.isDirected ?? true,
             };
             setLocalValues(edgeValues);
             lastSavedValues.current = { ...edgeValues };
@@ -65,27 +66,22 @@ export const NodePropertiesOverlay = memo(() => {
 
     const debouncedSave = useCallback((field: string, value: any) => {
 
+        console.log('Debounced save called for field:', field, 'with value:', value);
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
-        // Set new timeout
         timeoutRef.current = window.setTimeout(() => {
-            // Only save if value actually changed
             if (lastSavedValues.current[field] !== value) {
-                console.log(`Saving field "${field}" with value:`, value, 'for node:', selectedNodeId);
                 if (selectedNodeId) {
                     if (field === 'width' || field === 'height') {
-                        // Handle dimensions differently
                         updateNode(selectedNodeId, {
                             style: {
                                 [field]: value,
                             }
                         });
                     } else {
-                        // Handle data fields - pass them as direct field updates since updateNode handles this
                         const updateData = { [field]: value };
-                        console.log('Calling updateNode with:', updateData);
                         updateNode(selectedNodeId, updateData);
                     }
                 } else if (selectedEdgeId) {
@@ -94,17 +90,15 @@ export const NodePropertiesOverlay = memo(() => {
                     });
                 }
 
-                // Update the last saved value
                 lastSavedValues.current = {
                     ...lastSavedValues.current,
                     [field]: value
                 };
             }
-        }, 200); // Increased debounce time for better performance
+        }, 200);
     }, [selectedNodeId, selectedEdgeId, updateNode, updateEdge]);
 
     const handleValueChange = useCallback((field: string, value: any) => {
-        // Update local state immediately for responsive UI
         setLocalValues(prev => ({
             ...prev,
             [field]: value
@@ -207,7 +201,7 @@ export const NodePropertiesOverlay = memo(() => {
                 <Space direction="vertical" style={{ width: '100%' }}>
                     {/* Basic Info */}
                     <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                        <Text type="secondary">ID: {selectedNode.id.substring(0, 8)}...</Text><br />
+                        <Text type="secondary">ID: {selectedNode.id.substring(0, 8)}</Text><br />
                         <Text type="secondary">
                             Position: ({Math.round(selectedNode.position.x)}, {Math.round(selectedNode.position.y)})
                         </Text>
@@ -246,7 +240,6 @@ export const NodePropertiesOverlay = memo(() => {
                                 value={localValues.color}
                                 onChange={(color) => handleValueChange('color', color.toHexString())}
                                 onChangeComplete={(color) => {
-                                    // Force immediate save on color picker close
                                     if (timeoutRef.current) {
                                         clearTimeout(timeoutRef.current);
                                     }
@@ -278,7 +271,7 @@ export const NodePropertiesOverlay = memo(() => {
                                 value={localValues.height || 80}
                                 onChange={(value) => handleValueChange('height', value || 80)}
                                 min={80}
-                                max={300}
+                                max={500}
                                 addonBefore="H"
                                 style={{ width: '50%' }}
                             />
@@ -292,9 +285,9 @@ export const NodePropertiesOverlay = memo(() => {
                 <Space direction="vertical" style={{ width: '100%' }}>
                     {/* Basic Info */}
                     <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                        <Text type="secondary">ID: {selectedEdge.id.substring(0, 8)}...</Text><br />
+                        <Text type="secondary">ID: {selectedEdge.id.substring(0, 8)}</Text><br />
                         <Text type="secondary">
-                            {selectedEdge.source} → {selectedEdge.target}
+                            {selectedEdge.source.substring(0, 8)} → {selectedEdge.target.substring(0, 8)}
                         </Text>
                     </div>
 
@@ -320,6 +313,26 @@ export const NodePropertiesOverlay = memo(() => {
                             onChange={(value) => handleValueChange('weight', value || 1)}
                             min={0}
                         />
+                    </div>
+
+                    {/* Color */}
+                    <div>
+                        <Text strong style={{ fontSize: '12px' }}>Color:</Text>
+                        <div style={{ marginTop: '4px' }}>
+                            <ColorPicker
+                                size="small"
+                                value={localValues.color}
+                                onChange={(color) => handleValueChange('color', color.toHexString())}
+                                onChangeComplete={(color) => {
+                                    if (timeoutRef.current) {
+                                        clearTimeout(timeoutRef.current);
+                                    }
+                                    debouncedSave('color', color.toHexString());
+                                }}
+                                showText
+                                style={{ width: '100%' }}
+                            />
+                        </div>
                     </div>
 
                     {/* Direction */}

@@ -51,9 +51,7 @@ export default function GraphEditor() {
     };
 
     const handleAddNode = () => {
-        const newNode = createNodeAtCenter();
-        console.log('Created node:', newNode);
-        console.log('All nodes after creation:', nodes);
+        createNodeAtCenter();
     };
 
     const graphHandlers = {
@@ -62,8 +60,6 @@ export default function GraphEditor() {
             connectionState: { fromNode: { id: string }; isValid: boolean },
             screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
         ) => {
-
-            console.log('onConnectEnd triggered:', connectionState);
             if (!connectionState.isValid) {
                 const { clientX, clientY } = 'changedTouches' in event
                     ? event.changedTouches[0]
@@ -82,7 +78,7 @@ export default function GraphEditor() {
                 }
 
                 const newNode = {
-                    type: 'ResizableNode',
+                    type: 'custom',
                     position,
                     data: {
                         label: ``,
@@ -97,10 +93,11 @@ export default function GraphEditor() {
                     const newEdge = {
                         source: connectionState.fromNode.id,
                         target: createdNode.id,
-                        type: 'default',
+                        type: 'floating',
                         data: {
                             weight: 1,
                             isDirected: true,
+                            color: '#b1b1b7',
                         },
                     };
 
