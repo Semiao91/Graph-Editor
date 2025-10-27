@@ -4,6 +4,7 @@ import { useNode } from '../../hooks/useNode';
 import { useGraphStore } from '../../store';
 import GraphCanvas from '../organisms/GraphCanvas';
 import Header from '../organisms/Header';
+import { NodePropertiesOverlay } from '../organisms/NodePropertiesOverLay';
 
 export default function GraphEditor() {
     const {
@@ -19,6 +20,8 @@ export default function GraphEditor() {
     const {
         clearGraph,
         isDirty,
+        isSnap,
+        toggleSnap,
         addNode,
         addEdge
     } = useGraphStore();
@@ -26,6 +29,11 @@ export default function GraphEditor() {
     // Header handlers
     const handleNewGraph = () => {
         clearGraph();
+    };
+
+    const handleMagnetToggle = () => {
+        toggleSnap();
+        console.log('Magnet toggle clicked');
     };
 
     const handleSaveGraph = () => {
@@ -54,30 +62,37 @@ export default function GraphEditor() {
             connectionState: { fromNode: { id: string }; isValid: boolean },
             screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
         ) => {
+
+            console.log('onConnectEnd triggered:', connectionState);
             if (!connectionState.isValid) {
                 const { clientX, clientY } = 'changedTouches' in event
                     ? event.changedTouches[0]
                     : event;
 
-                const position = screenToFlowPosition({
+                let position = screenToFlowPosition({
                     x: clientX,
                     y: clientY,
                 });
 
-                // Create the new node
+                if (isSnap) {
+                    position = {
+                        x: Math.round(position.x / 20) * 20,
+                        y: Math.round(position.y / 20) * 20,
+                    };
+                }
+
                 const newNode = {
                     type: 'ResizableNode',
                     position,
                     data: {
-                        label: `Node ${nodes.length + 1}`,
+                        label: ``,
                         color: '#ffffff',
-                        weight: 1,
+                        weight: 20,
                     },
                 };
 
                 const createdNode = addNode(newNode);
 
-                // Create edge between the source node and new node
                 if (createdNode) {
                     const newEdge = {
                         source: connectionState.fromNode.id,
@@ -92,12 +107,13 @@ export default function GraphEditor() {
                     addEdge(newEdge);
                 }
             }
-        }, [addNode, addEdge, nodes.length]),
+        }, [addNode, addEdge, nodes.length, isSnap]),
     };
 
-    // Keyboard handlers for delete
+
+    // TODO: REFACTOR TO HOOK
     const handleKeyDown = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Delete' || event.key === 'Backspace') {
+        if (event.key === 'Delete') {
             event.preventDefault();
 
             if (selectedNodeId) {
@@ -108,7 +124,6 @@ export default function GraphEditor() {
         }
     }, [selectedNodeId, selectedEdgeId, removeNode, removeEdge]);
 
-    // Add keyboard event listener
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -124,8 +139,13 @@ export default function GraphEditor() {
                 onSaveGraph={handleSaveGraph}
                 onLoadGraph={handleLoadGraph}
                 onClearGraph={handleClearGraph}
+                onMagnetToggle={handleMagnetToggle}
+                isSnap={isSnap}
                 isDirty={isDirty}
                 fixed={true}
+            />
+
+            <NodePropertiesOverlay
             />
 
             <GraphCanvas

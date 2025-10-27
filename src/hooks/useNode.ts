@@ -12,6 +12,7 @@ export const useNode = () => {
     } = useGraphStore();
 
     const createNode = useCallback((position?: { x: number; y: number }) => {
+
         const defaultPosition = position || {
             x: Math.random() * 400 + 100,
             y: Math.random() * 300 + 100,
@@ -21,7 +22,7 @@ export const useNode = () => {
             type: 'ResizableNode',
             position: defaultPosition,
             data: {
-                label: `Node ${nodes.length + 1}`,
+                label: ``,
                 color: '#ffffff',
                 weight: 1,
             },
@@ -30,10 +31,10 @@ export const useNode = () => {
         return addNode(newNode);
     }, [addNode, nodes.length]);
 
-    const createNodeAtCenter = useCallback(() => {
+    const createNodeAtCenter = useCallback((position?: { x: number; y: number }) => {
         const centerPosition = {
-            x: 400, // Use fixed center instead of window calculation
-            y: 300,
+            x: position?.x || window.innerWidth / 2,
+            y: position?.y || window.innerHeight / 2,
         };
         return createNode(centerPosition);
     }, [createNode]);

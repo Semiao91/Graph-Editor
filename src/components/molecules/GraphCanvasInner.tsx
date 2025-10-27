@@ -12,11 +12,13 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
     const {
         nodes,
         edges,
+        isSnap,
         onNodesChange,
         onEdgesChange,
         onConnect,
         onSelectionChange,
-        setSelectedNode
+        setSelectedNode,
+        setSelectedEdge
     } = useGraphStore();
 
     const { screenToFlowPosition } = useReactFlow();
@@ -32,7 +34,8 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
 
     const onPaneClick = useCallback(() => {
         setSelectedNode(null);
-    }, [setSelectedNode]);
+        setSelectedEdge(null);
+    }, [setSelectedNode, setSelectedEdge]);
 
     const onConnectEnd = useCallback((event: any, connectionState: any) => {
         if (handlers?.onConnectEnd) {
@@ -41,9 +44,9 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
     }, [handlers, screenToFlowPosition]);
 
     const onEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
-        setSelectedNode(null);
-        console.log('Edge clicked:', edge.id);
-    }, [setSelectedNode]);
+        setSelectedEdge(edge.id);
+        console.log('Edge selected:', edge.id);
+    }, [setSelectedEdge]);
 
     const defaultEdgeOptions = useMemo(() => ({
         type: 'default',
@@ -67,7 +70,7 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
             onSelectionChange={onSelectionChange}
             defaultEdgeOptions={defaultEdgeOptions}
             snapGrid={snapGrid}
-            snapToGrid={true}
+            snapToGrid={isSnap}
             nodesDraggable={true}
             nodesConnectable={true}
             elementsSelectable={true}

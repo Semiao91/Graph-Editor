@@ -9,7 +9,7 @@ export interface GraphActions {
     // Node actions
     addNode: (node: Omit<GraphNode, 'id'>) => GraphNode;
     setNodes: (nodes: GraphNode[]) => void;
-    updateNode: (id: string, updates: Partial<GraphNode['data']>) => void;
+    updateNode: (id: string, updates: Partial<GraphNode['data']> & { style?: Partial<GraphNode['style']> }) => void;
     deleteNode: (id: string) => void;
     setSelectedNode: (id: string | null) => void;
     setSelectedNodes: (selectedNodes: GraphNode[]) => void;
@@ -29,6 +29,8 @@ export interface GraphActions {
     setOnlineStatus: (isOnline: boolean) => void;
     markDirty: () => void;
     markClean: () => void;
+    setSnap: (isSnap: boolean) => void;
+    toggleSnap: () => void;
 }
 
 export interface GraphHandlers {
@@ -60,6 +62,7 @@ export interface GraphNode {
         label: string;
         color: string;
         weight: number;
+        style?: React.CSSProperties;
     };
 }
 
@@ -71,6 +74,7 @@ export interface GraphEdge {
     data?: {
         weight?: number;
         isDirected?: boolean;
+        label?: string;
     };
 }
 
@@ -82,4 +86,5 @@ export interface GraphState {
     selectedNodes: GraphNode[];
     isOnline: boolean;
     isDirty: boolean;
+    isSnap: boolean;
 }

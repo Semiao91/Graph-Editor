@@ -1,9 +1,5 @@
-import {
-    DeleteOutlined,
-    LoadingOutlined,
-    SaveOutlined
-} from '@ant-design/icons';
 import { Button, Space, Typography } from 'antd';
+import { Magnet } from 'lucide-react';
 import IconButton from '../atoms/IconButton';
 
 const { Title } = Typography;
@@ -12,19 +8,20 @@ export interface HeaderProps {
     title: string;
     onNewGraph?: () => void;
     onSaveGraph?: () => void;
+    onMagnetToggle?: () => void;
     onLoadGraph?: () => void;
     onClearGraph?: () => void;
     isDirty?: boolean;
+    isSnap?: boolean;
     fixed?: boolean;
 }
 
 export default function Header({
     title,
     onNewGraph,
-    onSaveGraph,
-    onLoadGraph,
-    onClearGraph,
+    onMagnetToggle,
     isDirty,
+    isSnap = false,
     fixed = false
 }: HeaderProps) {
     const headerStyle = {
@@ -52,10 +49,21 @@ export default function Header({
             </Title>
 
             <Space size="small">
+                <IconButton
+                    icon={<Magnet />}
+                    tooltip={isSnap ? "Disable Snap to Grid" : "Enable Snap to Grid"}
+                    size="small"
+                    onClick={onMagnetToggle}
+                    type={isSnap ? "primary" : "default"}
+                    style={{
+                        backgroundColor: isSnap ? '#1890ff' : 'transparent',
+                        color: isSnap ? 'white' : 'inherit',
+                    }}
+                />
                 <Button type="primary" onClick={onNewGraph} size="small">
                     New Graph
                 </Button>
-                <IconButton
+                {/* <IconButton
                     icon={<SaveOutlined />}
                     tooltip="Save Graph"
                     size="small"
@@ -66,14 +74,15 @@ export default function Header({
                     tooltip="Load Graph"
                     size="small"
                     onClick={onLoadGraph}
-                />
-                <IconButton
+                /> */}
+
+                {/* <IconButton
                     icon={<DeleteOutlined />}
                     tooltip="Clear Graph"
                     size="small"
                     danger
                     onClick={onClearGraph}
-                />
+                /> */}
             </Space>
         </div>
     );

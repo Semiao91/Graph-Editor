@@ -16,6 +16,7 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
             selectedNodes: [],
             isOnline: true,
             isDirty: false,
+            isSnap: true,
 
             // React Flow handlers (following their docs pattern)
             onNodesChange: (changes) => {
@@ -73,9 +74,29 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
 
             updateNode: (id, updates) => {
                 set({
-                    nodes: get().nodes.map((node) =>
-                        node.id === id ? { ...node, data: { ...node.data, ...updates } } : node
-                    ),
+                    nodes: get().nodes.map((node) => {
+                        if (node.id === id) {
+                            const updatedNode = { ...node };
+
+                            const hasDataUpdates = 'label' in updates || 'color' in updates || 'weight' in updates;
+                            if (hasDataUpdates) {
+                                updatedNode.data = {
+                                    ...node.data,
+                                    ...(updates.label !== undefined && { label: updates.label }),
+                                    ...(updates.color !== undefined && { color: updates.color }),
+                                    ...(updates.weight !== undefined && { weight: updates.weight })
+                                };
+                            }
+
+                            // Handle style updates
+                            if (updates.style) {
+                                updatedNode.style = { ...node.style, ...updates.style };
+                            }
+
+                            return updatedNode;
+                        }
+                        return node;
+                    }),
                     isDirty: true,
                 }, false, `updateNode: ${id}`);
             },
@@ -171,6 +192,14 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
             // App state
             setOnlineStatus: (isOnline) => {
                 set({ isOnline }, false, 'setOnlineStatus');
+            },
+
+            setSnap: (isSnap) => {
+                set({ isSnap }, false, 'setSnap');
+            },
+
+            toggleSnap: () => {
+                set((state) => ({ isSnap: !state.isSnap }), false, 'toggleSnap');
             },
 
             markDirty: () => {

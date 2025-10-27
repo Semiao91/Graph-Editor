@@ -44,12 +44,7 @@ const ResizableNode = ({ data, selected }: { data: ResizableNodeData; selected: 
                 }}
             >
                 <div>
-                    <div style={{ marginBottom: '4px' }}>{nodeData.label}</div>
-                    {nodeData.weight && (
-                        <div style={{ fontSize: '11px', opacity: 0.7 }}>
-                            Weight: {nodeData.weight}
-                        </div>
-                    )}
+                    <div style={{ marginBottom: '4px', fontSize: `${data.weight}px` }}>{nodeData.label}</div>
                 </div>
             </div>
 
