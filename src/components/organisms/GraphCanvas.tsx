@@ -9,23 +9,21 @@ import { GraphCanvasInner } from '../molecules/GraphCanvasInner';
 
 export interface GraphCanvasProps {
     fullScreen?: boolean;
-    headerHeight?: number;
     onAddNode?: () => void;
     handlers?: GraphHandlers;
 }
 
 export default function GraphCanvas({
     fullScreen = false,
-    headerHeight = 60,
     onAddNode,
     handlers,
 }: GraphCanvasProps) {
     const canvasStyle = fullScreen
         ? {
             width: '100vw',
-            height: `calc(100vh - ${headerHeight}px)`,
+            height: '100vh',
             position: 'absolute' as const,
-            top: headerHeight,
+            top: 0,
             left: 0,
         }
         : {

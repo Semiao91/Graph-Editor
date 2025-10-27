@@ -136,10 +136,10 @@ export default function GraphEditor() {
                 onSaveGraph={handleSaveGraph}
                 onLoadGraph={handleLoadGraph}
                 onClearGraph={handleClearGraph}
+                onAddNode={handleAddNode}
                 onMagnetToggle={handleMagnetToggle}
                 isSnap={isSnap}
                 isDirty={isDirty}
-                fixed={true}
             />
 
             <NodePropertiesOverlay
@@ -147,7 +147,6 @@ export default function GraphEditor() {
 
             <GraphCanvas
                 fullScreen={true}
-                headerHeight={60}
                 onAddNode={handleAddNode}
                 handlers={graphHandlers}
             />

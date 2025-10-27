@@ -1,8 +1,8 @@
-import { Button, Space, Typography } from 'antd';
-import { Magnet } from 'lucide-react';
+import { Space, Tooltip, Typography } from 'antd';
+import { FileText, FolderOpen, Magnet, Plus, Save, Trash2 } from 'lucide-react';
 import IconButton from '../atoms/IconButton';
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 export interface HeaderProps {
     title: string;
@@ -11,6 +11,7 @@ export interface HeaderProps {
     onMagnetToggle?: () => void;
     onLoadGraph?: () => void;
     onClearGraph?: () => void;
+    onAddNode?: () => void;
     isDirty?: boolean;
     isSnap?: boolean;
     fixed?: boolean;
@@ -19,71 +20,199 @@ export interface HeaderProps {
 export default function Header({
     title,
     onNewGraph,
+    onSaveGraph,
+    onLoadGraph,
+    onClearGraph,
+    onAddNode,
     onMagnetToggle,
     isDirty,
     isSnap = false,
-    fixed = false
 }: HeaderProps) {
-    const headerStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '12px 24px',
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #f0f0f0',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-        zIndex: 1000,
-        ...(fixed && {
-            position: 'fixed' as const,
-            top: 0,
-            left: 0,
-            right: 0,
-            width: '100%',
-        }),
-    };
-
     return (
-        <div style={headerStyle}>
-            <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
-                {title} {isDirty && <span style={{ color: '#f59e0b' }}>*</span>}
-            </Title>
+        <>
+            {/* App Title - Top Left */}
+            <div style={{
+                position: 'fixed',
+                top: '20px',
+                left: '20px',
+                zIndex: 1001,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+            }}>
+                <div style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    borderRadius: '12px',
+                    padding: '8px 16px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                }}>
+                    <Text strong style={{ color: '#1f2937', fontSize: '14px' }}>
+                        {title} {isDirty && <span style={{ color: '#f59e0b' }}>●</span>}
+                    </Text>
+                </div>
+            </div>
 
-            <Space size="small">
-                <IconButton
-                    icon={<Magnet />}
-                    tooltip={isSnap ? "Disable Snap to Grid" : "Enable Snap to Grid"}
-                    size="small"
-                    onClick={onMagnetToggle}
-                    type={isSnap ? "primary" : "default"}
-                    style={{
-                        backgroundColor: isSnap ? '#1890ff' : 'transparent',
-                        color: isSnap ? 'white' : 'inherit',
-                    }}
-                />
-                <Button type="primary" onClick={onNewGraph} size="small">
-                    New Graph
-                </Button>
-                {/* <IconButton
-                    icon={<SaveOutlined />}
-                    tooltip="Save Graph"
-                    size="small"
-                    onClick={onSaveGraph}
-                />
-                <IconButton
-                    icon={<LoadingOutlined />}
-                    tooltip="Load Graph"
-                    size="small"
-                    onClick={onLoadGraph}
-                /> */}
+            {/* Main Floating Toolbar - Top Center */}
+            <div style={{
+                position: 'fixed',
+                top: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 1001,
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '16px',
+                padding: '8px 12px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                gap: '4px',
+            }}>
+                <Space size={4}>
+                    {/* File Operations */}
 
-                {/* <IconButton
-                    icon={<DeleteOutlined />}
-                    tooltip="Clear Graph"
-                    size="small"
-                    danger
-                    onClick={onClearGraph}
-                /> */}
-            </Space>
-        </div>
+                    <Tooltip title="New Graph" placement="bottom">
+                        <IconButton
+                            icon={<FileText size={16} />}
+                            size="small"
+                            onClick={onNewGraph}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: 'transparent',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+
+                    <Tooltip title="Save Graph" placement="bottom">
+                        <IconButton
+                            icon={<Save size={16} />}
+                            size="small"
+                            onClick={onSaveGraph}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: 'transparent',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+
+                    <Tooltip title="Load Graph" placement="bottom">
+                        <IconButton
+                            icon={<FolderOpen size={16} />}
+                            size="small"
+                            onClick={onLoadGraph}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: 'transparent',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+
+                    {/* Divider */}
+                    <div style={{
+                        width: '1px',
+                        height: '24px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        margin: '0 4px',
+                    }} />
+
+                    {/* Tools */}
+
+                    <Tooltip title="Add Node" placement="bottom">
+                        <IconButton
+                            icon={<Plus size={16} />}
+                            size="small"
+                            onClick={onAddNode}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: '#1890ff',
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+
+
+                    <Tooltip title={isSnap ? "Disable Snap to Grid" : "Enable Snap to Grid"} placement="bottom">
+                        <IconButton
+                            icon={<Magnet size={16} />}
+                            size="small"
+                            onClick={onMagnetToggle}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: isSnap ? '#1890ff' : 'transparent',
+                                color: isSnap ? 'white' : 'inherit',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+
+                    {/* Divider */}
+                    <div style={{
+                        width: '1px',
+                        height: '24px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        margin: '0 4px',
+                    }} />
+
+                    {/* Danger Zone */}
+
+                    <Tooltip title="Clear Graph" placement="bottom">
+                        <IconButton
+                            icon={<Trash2 size={16} />}
+                            size="small"
+                            onClick={onClearGraph}
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                border: 'none',
+                                backgroundColor: 'transparent',
+                                color: '#ff4d4f',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                            }}
+                        />
+                    </Tooltip>
+                </Space>
+            </div>
+        </>
     );
 }
