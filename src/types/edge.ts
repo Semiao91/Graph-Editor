@@ -1,10 +1,8 @@
-export type Edge = {
-    id: string;
-    source: string;
-    target: string;
-    type?: 'default' | 'straight' | 'step' | 'smoothstep';
-    data?: {
-        weight?: number;
-        isDirected?: boolean;
-    };
-}
+import type { EdgeActions } from "../interfaces/graph";
+import type { EdgeState } from "../interfaces/store";
+
+// Edge-specific types
+export type EdgeTypes = 'default' | 'straight' | 'step' | 'smoothstep' | 'floating';
+
+// Slice type
+export type EdgeSlice = EdgeState & EdgeActions;

@@ -2,7 +2,7 @@ import { MarkerType, Position } from "@xyflow/react";
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-export const getNodeIntersection = (intersectionNode, targetNode) => {
+export const getNodeIntersection = (intersectionNode: { x: number, y: number, measured: { width: number, height: number }, internals: { positionAbsolute: { x: number, y: number } } }, targetNode: { measured: { width: number, height: number }, internals: { positionAbsolute: { x: number, y: number } } }) => {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const { width: intersectionNodeWidth, height: intersectionNodeHeight } =
     intersectionNode.measured;
@@ -29,7 +29,7 @@ export const getNodeIntersection = (intersectionNode, targetNode) => {
 };
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-function getEdgePosition(node, intersectionPoint) {
+function getEdgePosition(node: any, intersectionPoint: { x: number; y: number }) {
   const n = { ...node.internals.positionAbsolute, ...node };
   const nx = Math.round(n.x);
   const ny = Math.round(n.y);
@@ -53,7 +53,7 @@ function getEdgePosition(node, intersectionPoint) {
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export const getEdgeParams = (source, target) => {
+export const getEdgeParams = (source: any, target: any) => {
   const sourceIntersectionPoint = getNodeIntersection(source, target);
   const targetIntersectionPoint = getNodeIntersection(target, source);
 

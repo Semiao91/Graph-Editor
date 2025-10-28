@@ -1,12 +1,15 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useEdge } from '../../hooks/useEdge';
 import { useNode } from '../../hooks/useNode';
 import { useGraphStore } from '../../store';
+import { initPersistence } from '../../utils/persist';
 import GraphCanvas from '../organisms/GraphCanvas';
 import Header from '../organisms/Header';
 import { NodePropertiesOverlay } from '../organisms/NodePropertiesOverLay';
 
 export default function GraphEditor() {
+    const persistenceRef = useRef<ReturnType<typeof initPersistence> | null>(null);
+
     const {
         createNodeAtCenter,
         removeNode,
@@ -26,27 +29,14 @@ export default function GraphEditor() {
         addEdge
     } = useGraphStore();
 
-    // Header handlers
-    const handleNewGraph = () => {
-        clearGraph();
-    };
-
     const handleMagnetToggle = () => {
         toggleSnap();
         console.log('Magnet toggle clicked');
     };
-
-    const handleSaveGraph = () => {
-        console.log('Save graph');
-        // TODO: Implement save functionality
-    };
-
-    const handleLoadGraph = () => {
-        console.log('Load graph');
-        // TODO: Implement load functionality
-    };
-
-    const handleClearGraph = () => {
+    const handleClearGraph = async () => {
+        if (persistenceRef.current) {
+            await persistenceRef.current.clear();
+        }
         clearGraph();
     };
 
@@ -121,6 +111,21 @@ export default function GraphEditor() {
         }
     }, [selectedNodeId, selectedEdgeId, removeNode, removeEdge]);
 
+    // Initialize persistence once
+    useEffect(() => {
+        if (!persistenceRef.current) {
+            persistenceRef.current = initPersistence(useGraphStore);
+        }
+
+        // Cleanup on unmount
+        return () => {
+            if (persistenceRef.current) {
+                persistenceRef.current.dispose();
+                persistenceRef.current = null;
+            }
+        };
+    }, []);
+
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -132,9 +137,6 @@ export default function GraphEditor() {
         <>
             <Header
                 title="Graph Editor"
-                onNewGraph={handleNewGraph}
-                onSaveGraph={handleSaveGraph}
-                onLoadGraph={handleLoadGraph}
                 onClearGraph={handleClearGraph}
                 onAddNode={handleAddNode}
                 onMagnetToggle={handleMagnetToggle}

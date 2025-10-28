@@ -38,14 +38,24 @@ export const NodePropertiesOverlay = memo(() => {
     const selectedEdge = edges.find(edge => edge.id === selectedEdgeId);
     const selectedItem = selectedNode || selectedEdge;
 
+    // Helper function to convert string dimensions to numbers
+    const toDimension = (value: string | number | undefined, defaultValue: number): number => {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            const parsed = parseInt(value, 10);
+            return isNaN(parsed) ? defaultValue : parsed;
+        }
+        return defaultValue;
+    };
+
     useEffect(() => {
         if (selectedNode) {
             const nodeValues = {
                 label: selectedNode.data?.label || '',
                 color: selectedNode.data?.color || '#f8f9fa',
                 weight: selectedNode.data?.weight ?? 20,
-                width: selectedNode.style?.width || 150,
-                height: selectedNode.style?.height || 80,
+                width: toDimension(selectedNode.style?.width, 150),
+                height: toDimension(selectedNode.style?.height, 80),
             };
             setLocalValues(nodeValues);
             lastSavedValues.current = { ...nodeValues };

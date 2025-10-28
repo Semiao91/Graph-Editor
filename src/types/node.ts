@@ -1,30 +1,8 @@
-export type Node = {
-    id: string;
-    type: NodeTypes;
-    position: { x: number; y: number };
-    data: {
-        label: string;
-        color: string;
-        weight: number;
-    }
-}
+import type { NodeActions, NodeData } from "../interfaces/graph";
+import type { NodeState } from "../interfaces/store";
 
-export type NodeTypes = {
-    ResizableNode: ResizableNodeData,
-    ResizableNodeSelected: string,
-    CustomResizerNode: string,
-    Default: string,
-}
+export type NodeTypes = 'customNode' | 'resizableNode' | 'default';
 
-export type HandleConfig = {
-    id: string;
-    position: 'top' | 'right' | 'bottom' | 'left';
-    type: 'source' | 'target';
-};
+export type ResizableNodeData = NodeData;
 
-export type ResizableNodeData = {
-    label: string;
-    color?: string;
-    weight?: number;
-    handles?: HandleConfig[];
-};
+export type NodeSlice = NodeState & NodeActions;

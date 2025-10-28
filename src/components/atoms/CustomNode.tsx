@@ -12,7 +12,6 @@ interface CustomNodeProps {
 }
 
 export const CustomNode = memo(({ id, data, selected }: CustomNodeProps) => {
-    console.log('Rendering CustomNode:', id, 'Selected:', selected, 'data', data);
     const connection = useConnection();
     const isTarget = connection.inProgress && connection.fromNode.id !== id;
 

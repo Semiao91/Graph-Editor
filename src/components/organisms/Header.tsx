@@ -1,10 +1,12 @@
 import { Space, Tooltip, Typography } from 'antd';
-import { FileText, FolderOpen, Magnet, Plus, Save, Trash2 } from 'lucide-react';
+import { Magnet, Plus, RotateCw, Trash2 } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { useNotification } from '../../context/NotificationContext';
 import IconButton from '../atoms/IconButton';
 
 const { Text } = Typography;
 
-export interface HeaderProps {
+interface HeaderProps {
     title: string;
     onNewGraph?: () => void;
     onSaveGraph?: () => void;
@@ -28,9 +30,33 @@ export default function Header({
     isDirty,
     isSnap = false,
 }: HeaderProps) {
+    const prevIsDirty = useRef<boolean | undefined>(undefined);
+    const notificationTimeoutRef = useRef<number | null>(null);
+    const { success } = useNotification();
+
+    useEffect(() => {
+        if (prevIsDirty.current === true && isDirty === false) {
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
+            notificationTimeoutRef.current = window.setTimeout(() => {
+                success('Saved ✔');
+                notificationTimeoutRef.current = null;
+            }, 300);
+        }
+
+        if (isDirty && notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+            notificationTimeoutRef.current = null;
+        }
+
+        prevIsDirty.current = isDirty;
+    }, [isDirty, success]);
+
+
     return (
         <>
-            {/* App Title - Top Left */}
             <div style={{
                 position: 'fixed',
                 top: '20px',
@@ -49,12 +75,34 @@ export default function Header({
                     border: '1px solid rgba(0, 0, 0, 0.05)',
                 }}>
                     <Text strong style={{ color: '#1f2937', fontSize: '14px' }}>
-                        {title} {isDirty && <span style={{ color: '#f59e0b' }}>●</span>}
+                        {title}
                     </Text>
+
+                    {isDirty && (
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                        }}>
+                            <RotateCw
+                                size={12}
+                                style={{
+                                    color: '#1890ff',
+                                    animation: 'spin',
+                                }}
+                            />
+                            <span style={{
+                                color: '#1890ff',
+                                fontSize: '11px',
+                                fontWeight: 500
+                            }}>
+                                Saving...
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Main Floating Toolbar - Top Center */}
             <div style={{
                 position: 'fixed',
                 top: '20px',
@@ -72,75 +120,6 @@ export default function Header({
                 gap: '4px',
             }}>
                 <Space size={4}>
-                    {/* File Operations */}
-
-                    <Tooltip title="New Graph" placement="bottom">
-                        <IconButton
-                            icon={<FileText size={16} />}
-                            size="small"
-                            onClick={onNewGraph}
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '10px',
-                                border: 'none',
-                                backgroundColor: 'transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s ease',
-                            }}
-                        />
-                    </Tooltip>
-
-                    <Tooltip title="Save Graph" placement="bottom">
-                        <IconButton
-                            icon={<Save size={16} />}
-                            size="small"
-                            onClick={onSaveGraph}
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '10px',
-                                border: 'none',
-                                backgroundColor: 'transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s ease',
-                            }}
-                        />
-                    </Tooltip>
-
-                    <Tooltip title="Load Graph" placement="bottom">
-                        <IconButton
-                            icon={<FolderOpen size={16} />}
-                            size="small"
-                            onClick={onLoadGraph}
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '10px',
-                                border: 'none',
-                                backgroundColor: 'transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s ease',
-                            }}
-                        />
-                    </Tooltip>
-
-                    {/* Divider */}
-                    <div style={{
-                        width: '1px',
-                        height: '24px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                        margin: '0 4px',
-                    }} />
-
-                    {/* Tools */}
-
                     <Tooltip title="Add Node" placement="bottom">
                         <IconButton
                             icon={<Plus size={16} />}
@@ -160,8 +139,13 @@ export default function Header({
                             }}
                         />
                     </Tooltip>
-
-
+                    {/* Divider */}
+                    <div style={{
+                        width: '1px',
+                        height: '24px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        margin: '0 4px',
+                    }} />
                     <Tooltip title={isSnap ? "Disable Snap to Grid" : "Enable Snap to Grid"} placement="bottom">
                         <IconButton
                             icon={<Magnet size={16} />}

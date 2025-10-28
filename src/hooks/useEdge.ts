@@ -12,7 +12,6 @@ export const useEdge = () => {
         selectedEdgeId,
     } = useGraphStore();
 
-    // Handle new connections between nodes
     const onConnect = useCallback((connection: Connection) => {
         if (connection.source && connection.target) {
             const newEdge = {
@@ -28,7 +27,6 @@ export const useEdge = () => {
         }
     }, [addEdge]);
 
-    // Update edge properties
     const updateEdgeData = useCallback((edgeId: string, updates: Partial<{
         weight: number;
         isDirected: boolean;
@@ -36,7 +34,6 @@ export const useEdge = () => {
         updateEdge(edgeId, updates);
     }, [updateEdge]);
 
-    // Delete selected edge or specific edge
     const removeEdge = useCallback((edgeId?: string) => {
         const targetId = edgeId || selectedEdgeId;
         if (targetId) {

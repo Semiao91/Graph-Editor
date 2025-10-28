@@ -91,7 +91,6 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
                                 };
                             }
 
-                            // Handle style updates (width, height)
                             if (updates.style) {
                                 updatedNode.style = {
                                     ...node.style,
