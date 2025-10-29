@@ -137,54 +137,6 @@ VITE_STORAGE_KEY=graph-editor:v1
 VITE_SAVE_DEBOUNCE_MS=800
 ```
 
-### Building for Production
-
-```bash
-npm run build
-```
-
-The build output will be in the `dist/` directory.
-
-### Deploying to Vercel
-
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-Or connect your GitHub repository to Vercel for automatic deployments.
-
-## License
-
-MIT
-
----
-
-Built with ❤️ using React, TypeScript, and Vite
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-globalIgnores(['dist']),
-{
-files: ['**/*.{ts,tsx}'],
-extends: [
-// Other configs...
-// Enable lint rules for React
-reactX.configs['recommended-typescript'],
-// Enable lint rules for React DOM
-reactDom.configs.recommended,
-],
-languageOptions: {
-parserOptions: {
-project: ['./tsconfig.node.json', './tsconfig.app.json'],
-tsconfigRootDir: import.meta.dirname,
-},
-// other options...
-},
-},
-])
 
 ```
 
