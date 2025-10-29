@@ -1,16 +1,12 @@
 import { Background, Controls, MarkerType, ReactFlow, useReactFlow } from "@xyflow/react";
 import { useCallback, useMemo } from "react";
-import type { GraphHandlers } from "../../interfaces/graph";
+import { useGraphHandlers } from "../../hooks/useGraphHandlers";
 import { useGraphStore } from "../../store";
 import CustomConnectionLine from "../atoms/CustomConnectionLine";
 import { CustomNode } from "../atoms/CustomNode";
 import FloatingEdge from "../atoms/FloatingEdge";
 
-interface GraphCanvasInnerProps {
-    handlers?: GraphHandlers;
-}
-
-export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
+export const GraphCanvasInner = () => {
     const {
         nodes,
         edges,
@@ -22,7 +18,7 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
         setSelectedNode,
         setSelectedEdge
     } = useGraphStore();
-
+    const { onConnectEnd } = useGraphHandlers();
     const { screenToFlowPosition } = useReactFlow();
 
     const nodeTypes = useMemo(() => ({
@@ -44,11 +40,9 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
         setSelectedEdge(null);
     }, [setSelectedNode, setSelectedEdge]);
 
-    const onConnectEnd = useCallback((event: any, connectionState: any) => {
-        if (handlers?.onConnectEnd) {
-            handlers.onConnectEnd(event, connectionState, screenToFlowPosition);
-        }
-    }, [handlers, screenToFlowPosition]);
+    const handleConnectEnd = useCallback((event: any, connectionState: any) => {
+        onConnectEnd(event, connectionState, screenToFlowPosition);
+    }, [onConnectEnd, screenToFlowPosition]);
 
     const onEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
         setSelectedEdge(edge.id);
@@ -77,7 +71,7 @@ export const GraphCanvasInner = ({ handlers }: GraphCanvasInnerProps) => {
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             onConnect={onConnect}
-            onConnectEnd={onConnectEnd}
+            onConnectEnd={handleConnectEnd}
             onNodeClick={onNodeClick}
             onPaneClick={onPaneClick}
             onNodesChange={onNodesChange}

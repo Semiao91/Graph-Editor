@@ -133,7 +133,9 @@ export interface GraphState {
     selectedNodeId: string | null;
     selectedEdgeId: string | null;
     selectedNodes: GraphNode[];
-    isOnline: boolean;
     isDirty: boolean;
     isSnap: boolean;
+    isOnline: boolean;
+    version?: number;
+    lastSync?: Date;
 }

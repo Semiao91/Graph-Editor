@@ -1,8 +1,9 @@
 import { Space, Tooltip, Typography } from 'antd';
 import { Magnet, Plus, RotateCw, Trash2 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNotification } from '../../context/NotificationContext';
 import IconButton from '../atoms/IconButton';
+import { ConfirmationModal } from '../atoms/Modal';
 
 const { Text } = Typography;
 
@@ -21,9 +22,6 @@ interface HeaderProps {
 
 export default function Header({
     title,
-    onNewGraph,
-    onSaveGraph,
-    onLoadGraph,
     onClearGraph,
     onAddNode,
     onMagnetToggle,
@@ -33,6 +31,7 @@ export default function Header({
     const prevIsDirty = useRef<boolean | undefined>(undefined);
     const notificationTimeoutRef = useRef<number | null>(null);
     const { success } = useNotification();
+    const [showClearConfirmation, setShowClearConfirmation] = useState(false)
 
     useEffect(() => {
         if (prevIsDirty.current === true && isDirty === false) {
@@ -54,7 +53,18 @@ export default function Header({
         prevIsDirty.current = isDirty;
     }, [isDirty, success]);
 
+    const handleClearGraphClick = () => {
+        setShowClearConfirmation(true);
+    };
 
+    const handleConfirmClear = () => {
+        setShowClearConfirmation(false);
+        onClearGraph?.();
+    };
+
+    const handleCancelClear = () => {
+        setShowClearConfirmation(false);
+    };
     return (
         <>
             <div style={{
@@ -180,7 +190,7 @@ export default function Header({
                         <IconButton
                             icon={<Trash2 size={16} />}
                             size="small"
-                            onClick={onClearGraph}
+                            onClick={handleClearGraphClick}
                             style={{
                                 width: '36px',
                                 height: '36px',
@@ -197,6 +207,33 @@ export default function Header({
                     </Tooltip>
                 </Space>
             </div>
+            <ConfirmationModal
+                open={showClearConfirmation}
+                title="Clear Graph"
+                message={
+                    <div>
+                        <p style={{ marginBottom: '12px' }}>
+                            Are you sure you want to clear the entire graph?
+                        </p>
+                        <p style={{
+                            marginBottom: '0',
+                            padding: '8px 12px',
+                            backgroundColor: '#fff2f0',
+                            border: '1px solid #ffccc7',
+                            borderRadius: '6px',
+                            color: '#cf1322',
+                            fontSize: '13px',
+                        }}>
+                            <strong>Warning:</strong> This action will permanently delete all nodes, edges, and saved data. This cannot be undone.
+                        </p>
+                    </div>
+                }
+                confirmText="Delete All Data"
+                cancelText="Cancel"
+                danger={true}
+                onConfirm={handleConfirmClear}
+                onCancel={handleCancelClear}
+            />
         </>
     );
 }

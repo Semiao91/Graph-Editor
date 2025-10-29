@@ -1,11 +1,11 @@
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { devtools } from 'zustand/middleware';
-import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
-import type { GraphActions, GraphEdge, GraphNode, GraphState } from '../interfaces/graph';
+import type { GraphEdge, GraphNode } from '../interfaces/graph';
+import type { Store } from '../types/store';
 
-export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
+export const useGraphStore = createWithEqualityFn<Store>()(
     devtools(
         (set, get) => ({
             // Initial state
@@ -14,9 +14,11 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
             selectedNodeId: null,
             selectedEdgeId: null,
             selectedNodes: [],
-            isOnline: true,
+            isOnline: false,
+            lastSync: undefined,
             isDirty: false,
             isSnap: true,
+            version: 1,
 
             // React Flow handlers (following their docs pattern)
             onNodesChange: (changes) => {
@@ -68,6 +70,7 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
                         height: 80,
                     }
                 };
+
                 set({
                     nodes: [...get().nodes, newNode],
                     isDirty: true,
@@ -238,6 +241,7 @@ export const useGraphStore = createWithEqualityFn<GraphState & GraphActions>()(
             },
         }),
         { name: 'graph-editor-store' }
-    ),
-    shallow
+    )
 );
+
+export const graphStoreApi = useGraphStore;

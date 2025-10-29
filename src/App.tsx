@@ -1,6 +1,7 @@
 import MainLayout from './components/layouts/mainLayout';
+import { NetworkSimulator } from './components/molecules/NetworkSimulator';
 import { NotificationDisplay } from './components/molecules/NotificationDisplay';
-import GraphEditor from './components/pages/GraphEditor';
+import { GraphEditor } from './components/pages/GraphEditor';
 import { AppProvider } from './context/AppContext';
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <AppProvider>
       <MainLayout fullScreen={true}>
         <GraphEditor />
+        <NetworkSimulator />
       </MainLayout>
       <NotificationDisplay />
     </AppProvider>

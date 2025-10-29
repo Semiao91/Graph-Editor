@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useEdge } from '../../hooks/useEdge';
 import { useNode } from '../../hooks/useNode';
+import { useSync } from '../../hooks/useSynch';
 import { useGraphStore } from '../../store';
 import { initPersistence } from '../../utils/persist';
 import GraphCanvas from '../organisms/GraphCanvas';
 import Header from '../organisms/Header';
 import { NodePropertiesOverlay } from '../organisms/NodePropertiesOverLay';
 
-export default function GraphEditor() {
+export const GraphEditor = () => {
     const persistenceRef = useRef<ReturnType<typeof initPersistence> | null>(null);
 
     const {
         createNodeAtCenter,
         removeNode,
-        nodes,
         selectedNodeId
     } = useNode();
     const {
@@ -25,14 +25,13 @@ export default function GraphEditor() {
         isDirty,
         isSnap,
         toggleSnap,
-        addNode,
-        addEdge
     } = useGraphStore();
+
 
     const handleMagnetToggle = () => {
         toggleSnap();
-        console.log('Magnet toggle clicked');
     };
+
     const handleClearGraph = async () => {
         if (persistenceRef.current) {
             await persistenceRef.current.clear();
@@ -44,61 +43,8 @@ export default function GraphEditor() {
         createNodeAtCenter();
     };
 
-    const graphHandlers = {
-        onConnectEnd: useCallback((
-            event: MouseEvent | TouchEvent,
-            connectionState: { fromNode: { id: string }; isValid: boolean },
-            screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
-        ) => {
-            if (!connectionState.isValid) {
-                const { clientX, clientY } = 'changedTouches' in event
-                    ? event.changedTouches[0]
-                    : event;
+    useSync()
 
-                let position = screenToFlowPosition({
-                    x: clientX,
-                    y: clientY,
-                });
-
-                if (isSnap) {
-                    position = {
-                        x: Math.round(position.x / 20) * 20,
-                        y: Math.round(position.y / 20) * 20,
-                    };
-                }
-
-                const newNode = {
-                    type: 'custom',
-                    position,
-                    data: {
-                        label: ``,
-                        color: '#ffffff',
-                        weight: 20,
-                    },
-                };
-
-                const createdNode = addNode(newNode);
-
-                if (createdNode) {
-                    const newEdge = {
-                        source: connectionState.fromNode.id,
-                        target: createdNode.id,
-                        type: 'floating',
-                        data: {
-                            weight: 1,
-                            isDirected: true,
-                            color: '#b1b1b7',
-                        },
-                    };
-
-                    addEdge(newEdge);
-                }
-            }
-        }, [addNode, addEdge, nodes.length, isSnap]),
-    };
-
-
-    // TODO: REFACTOR TO HOOK
     const handleKeyDown = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Delete') {
             event.preventDefault();
@@ -111,13 +57,11 @@ export default function GraphEditor() {
         }
     }, [selectedNodeId, selectedEdgeId, removeNode, removeEdge]);
 
-    // Initialize persistence once
     useEffect(() => {
         if (!persistenceRef.current) {
             persistenceRef.current = initPersistence(useGraphStore);
         }
 
-        // Cleanup on unmount
         return () => {
             if (persistenceRef.current) {
                 persistenceRef.current.dispose();
@@ -150,7 +94,6 @@ export default function GraphEditor() {
             <GraphCanvas
                 fullScreen={true}
                 onAddNode={handleAddNode}
-                handlers={graphHandlers}
             />
 
         </>

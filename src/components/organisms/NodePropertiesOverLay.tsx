@@ -2,10 +2,10 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Button, ColorPicker, Input, InputNumber, Space, Typography } from 'antd';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useGraphStore } from '../../store';
+import { toDimension } from '../../utils/toDimention';
 
 const { Title, Text } = Typography;
 
-//todo: REFACTOR CODE
 export const NodePropertiesOverlay = memo(() => {
     const {
         nodes,
@@ -37,16 +37,6 @@ export const NodePropertiesOverlay = memo(() => {
     const selectedNode = nodes.find(node => node.id === selectedNodeId);
     const selectedEdge = edges.find(edge => edge.id === selectedEdgeId);
     const selectedItem = selectedNode || selectedEdge;
-
-    // Helper function to convert string dimensions to numbers
-    const toDimension = (value: string | number | undefined, defaultValue: number): number => {
-        if (typeof value === 'number') return value;
-        if (typeof value === 'string') {
-            const parsed = parseInt(value, 10);
-            return isNaN(parsed) ? defaultValue : parsed;
-        }
-        return defaultValue;
-    };
 
     useEffect(() => {
         if (selectedNode) {
@@ -114,7 +104,6 @@ export const NodePropertiesOverlay = memo(() => {
             [field]: value
         }));
 
-        // Debounce the actual save
         debouncedSave(field, value);
     }, [debouncedSave]);
 
@@ -135,10 +124,8 @@ export const NodePropertiesOverlay = memo(() => {
     }, [selectedNodeId, selectedEdgeId, deleteNode, deleteEdge]);
 
     const handleClose = useCallback(() => {
-        // Save any pending changes before closing
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
-            // Force save current values if different from last saved
             Object.keys(localValues).forEach(field => {
                 if (lastSavedValues.current[field] !== localValues[field]) {
                     if (selectedNodeId) {
@@ -293,7 +280,6 @@ export const NodePropertiesOverlay = memo(() => {
             {/* Edge Properties */}
             {selectedEdge && (
                 <Space direction="vertical" style={{ width: '100%' }}>
-                    {/* Basic Info */}
                     <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                         <Text type="secondary">ID: {selectedEdge.id.substring(0, 8)}</Text><br />
                         <Text type="secondary">

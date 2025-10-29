@@ -42,8 +42,7 @@ export function initPersistence(store: StoreApi<Store>) {
             });
             await set(STORAGE_KEY, snapshot);
 
-            const state = store.getState();
-            state.markClean();
+            console.log('💾 Saved to local storage (sync status unchanged)');
         } catch (err) {
             console.error('Failed to persist graph:', err);
         }
