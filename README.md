@@ -2,6 +2,8 @@
 
 A modern, interactive graph editor built with React, TypeScript, and Vite. Create, edit, and visualize node-based graphs with real-time synchronization and offline support.
 
+Publicly available at: https://graph-editor-ideal-p9yyfvqrb-semiao91s-projects.vercel.app/
+
 ## Features
 
 - 🎨 **Interactive Graph Canvas** - Create and edit nodes and edges with drag-and-drop
