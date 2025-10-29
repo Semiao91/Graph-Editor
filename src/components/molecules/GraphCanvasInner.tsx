@@ -1,6 +1,7 @@
-import { Background, Controls, MarkerType, ReactFlow, useReactFlow } from "@xyflow/react";
+import { Background, Controls, MarkerType, ReactFlow, useReactFlow, type ConnectionState, type Node, type OnConnect, type OnConnectEnd } from "@xyflow/react";
 import { useCallback, useMemo } from "react";
 import { useGraphHandlers } from "../../hooks/useGraphHandlers";
+import type { GraphEdge } from "../../interfaces/graph";
 import { useGraphStore } from "../../store";
 import CustomConnectionLine from "../atoms/CustomConnectionLine";
 import { CustomNode } from "../atoms/CustomNode";
@@ -30,7 +31,7 @@ export const GraphCanvasInner = () => {
         default: FloatingEdge,
     }), []);
 
-    const onNodeClick = useCallback((_event: React.MouseEvent, node: any) => {
+    const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
         setSelectedNode(node.id);
         console.log('Node selected:', node.id);
     }, [setSelectedNode]);
@@ -40,11 +41,11 @@ export const GraphCanvasInner = () => {
         setSelectedEdge(null);
     }, [setSelectedNode, setSelectedEdge]);
 
-    const handleConnectEnd = useCallback((event: any, connectionState: any) => {
+    const handleConnectEnd = useCallback((event: MouseEvent | TouchEvent, connectionState: ConnectionState) => {
         onConnectEnd(event, connectionState, screenToFlowPosition);
     }, [onConnectEnd, screenToFlowPosition]);
 
-    const onEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
+    const onEdgeClick = useCallback((_event: React.MouseEvent, edge: GraphEdge) => {
         setSelectedEdge(edge.id);
         console.log('Edge selected:', edge.id);
     }, [setSelectedEdge]);
@@ -70,8 +71,8 @@ export const GraphCanvasInner = () => {
             edges={edges}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            onConnect={onConnect}
-            onConnectEnd={handleConnectEnd}
+            onConnect={onConnect as OnConnect}
+            onConnectEnd={handleConnectEnd as OnConnectEnd}
             onNodeClick={onNodeClick}
             onPaneClick={onPaneClick}
             onNodesChange={onNodesChange}

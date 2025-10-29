@@ -62,11 +62,10 @@ export const NodePropertiesOverlay = memo(() => {
             setLocalValues({});
             lastSavedValues.current = {};
         }
-    }, [selectedNode?.id, selectedNode?.data, selectedNode?.style, selectedEdge?.id, selectedEdge?.data]);
+    }, [selectedNode?.id, selectedNode, selectedEdge, selectedNode?.data, selectedNode?.style, selectedEdge?.id, selectedEdge?.data]);
 
-    const debouncedSave = useCallback((field: string, value: any) => {
+    const debouncedSave = useCallback((field: string, value: string | boolean | number | undefined) => {
 
-        console.log('Debounced save called for field:', field, 'with value:', value);
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
@@ -98,7 +97,7 @@ export const NodePropertiesOverlay = memo(() => {
         }, 200);
     }, [selectedNodeId, selectedEdgeId, updateNode, updateEdge]);
 
-    const handleValueChange = useCallback((field: string, value: any) => {
+    const handleValueChange = useCallback((field: string, value: string | boolean | number | undefined) => {
         setLocalValues(prev => ({
             ...prev,
             [field]: value

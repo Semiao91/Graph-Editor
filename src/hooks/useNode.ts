@@ -29,7 +29,7 @@ export const useNode = () => {
         };
 
         return addNode(newNode);
-    }, [addNode, nodes.length]);
+    }, [addNode]);
 
     const createNodeAtCenter = useCallback((position?: { x: number; y: number }) => {
         const centerPosition = {
