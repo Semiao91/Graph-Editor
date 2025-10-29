@@ -1,4 +1,5 @@
 import type { GraphData, SyncStatus } from '../interfaces/api';
+import type { GraphEdge, GraphNode } from '../interfaces/graph';
 import { graphStoreApi } from '../store';
 import { mockApi } from './mockApi.service';
 
@@ -121,7 +122,7 @@ export class SyncManager {
         }
     }
 
-    private generateChecksum(nodes: any[], edges: any[]): string {
+    private generateChecksum(nodes: GraphNode[], edges: GraphEdge[]): string {
         const content = JSON.stringify(nodes) + JSON.stringify(edges);
         return btoa(content).slice(0, 8);
     }

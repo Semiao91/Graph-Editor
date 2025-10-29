@@ -1,7 +1,7 @@
 import { Space, Tooltip, Typography } from 'antd';
-import { Magnet, Plus, RotateCw, Trash2 } from 'lucide-react';
+import { Magnet, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useNotification } from '../../context/NotificationContext';
+import { useNotification } from '../../hooks/useNotification';
 import IconButton from '../atoms/IconButton';
 import { ConfirmationModal } from '../atoms/Modal';
 
@@ -87,29 +87,6 @@ export default function Header({
                     <Text strong style={{ color: '#1f2937', fontSize: '14px' }}>
                         {title}
                     </Text>
-
-                    {isDirty && (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                        }}>
-                            <RotateCw
-                                size={12}
-                                style={{
-                                    color: '#1890ff',
-                                    animation: 'spin',
-                                }}
-                            />
-                            <span style={{
-                                color: '#1890ff',
-                                fontSize: '11px',
-                                fontWeight: 500
-                            }}>
-                                Saving...
-                            </span>
-                        </div>
-                    )}
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { useNotification } from "../../context/NotificationContext";
+import { useNotification } from "../../hooks/useNotification";
 import type { NotificationData } from "../../interfaces/notification";
 import { NotificationItem } from "../atoms/NotificationDisplay";
 

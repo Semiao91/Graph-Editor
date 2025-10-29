@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { useNotification } from '../context/NotificationContext';
 import { mockApi } from '../services/mockApi.service';
 import { SyncManager } from '../services/syncManager.service';
 import { useGraphStore } from '../store';
+import { useNotification } from './useNotification';
 
 export const useSync = () => {
     const syncManagerRef = useRef<SyncManager | null>(null);

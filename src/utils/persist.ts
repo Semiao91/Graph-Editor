@@ -88,8 +88,8 @@ export function initPersistence(store: StoreApi<Store>) {
 
             try {
                 localStorage.setItem(STORAGE_KEY + ':backup', JSON.stringify(snapshot));
-            } catch (err) {
-                console.warn('Failed to create backup on unload');
+            } catch (err: unknown) {
+                console.warn('Failed to create backup on unload', err);
             }
         }
     };
@@ -127,7 +127,7 @@ export function initPersistence(store: StoreApi<Store>) {
                 console.log('Clearing persisted graph data');
                 await del(STORAGE_KEY);
                 localStorage.removeItem(STORAGE_KEY + ':backup');
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('Failed to clear storage:', err);
             }
         },

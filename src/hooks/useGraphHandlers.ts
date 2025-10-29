@@ -1,13 +1,14 @@
+import type { ConnectionState } from "@xyflow/react";
 import { useCallback } from "react";
 import { useGraphStore } from "../store";
 
 export const useGraphHandlers = () => {
 
-    const { addNode, addEdge, nodes, isSnap } = useGraphStore();
+    const { addNode, addEdge, isSnap } = useGraphStore();
 
     const onConnectEnd = useCallback((
         event: MouseEvent | TouchEvent,
-        connectionState: { fromNode: { id: string }; isValid: boolean },
+        connectionState: ConnectionState,
         screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
     ) => {
         if (!connectionState.isValid) {
@@ -41,7 +42,7 @@ export const useGraphHandlers = () => {
 
             if (createdNode) {
                 const newEdge = {
-                    source: connectionState.fromNode.id,
+                    source: connectionState?.fromNode?.id as string,
                     target: createdNode.id,
                     type: 'floating',
                     data: {
@@ -54,7 +55,7 @@ export const useGraphHandlers = () => {
                 addEdge(newEdge);
             }
         }
-    }, [addNode, addEdge, nodes.length, isSnap]);
+    }, [addNode, addEdge, isSnap]);
 
 
     return {

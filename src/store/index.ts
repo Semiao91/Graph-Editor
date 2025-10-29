@@ -1,4 +1,4 @@
-import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
+import { applyEdgeChanges, applyNodeChanges, type Connection } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { devtools } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
@@ -35,10 +35,10 @@ export const useGraphStore = createWithEqualityFn<Store>()(
                 }, false, 'onEdgesChange');
             },
 
-            onConnect: (connection) => {
+            onConnect: (connection: Connection) => {
                 if (connection.source && connection.target) {
                     const id = uuidv4();
-                    const newEdge: GraphEdge = {
+                    const newEdge = {
                         id,
                         source: connection.source,
                         target: connection.target,

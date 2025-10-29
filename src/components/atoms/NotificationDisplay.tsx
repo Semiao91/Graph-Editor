@@ -16,7 +16,6 @@ interface NotificationItemProps {
 
 export const NotificationItem = ({ notification }: NotificationItemProps) => {
     const [isVisible, setIsVisible] = useState(false);
-    const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 10);
@@ -28,7 +27,7 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
     return (
         <div
             className={`notification-item notification-${notification.type} ${isVisible ? 'notification-enter' : ''
-                } ${isExiting ? 'notification-exit' : ''}`}
+                } `}
             style={{ borderLeftColor: color }}
         >
             <div className="notification-content">

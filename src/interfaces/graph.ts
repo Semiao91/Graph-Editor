@@ -1,4 +1,4 @@
-import type { Edge, Node } from '@xyflow/react';
+import type { Edge, EdgeChange, Node, NodeChange, NodeConnection, OnConnect, OnConnectEnd } from '@xyflow/react';
 import type { AppState, EdgeState, NodeState } from './store';
 
 
@@ -29,9 +29,9 @@ export interface EdgeActions {
 
 export interface ReactFlowActions {
     // ReactFlow handlers
-    onNodesChange: (changes: any[]) => void;
-    onEdgesChange: (changes: any[]) => void;
-    onConnect: (connection: any) => void;
+    onNodesChange: (changes: NodeChange<GraphNode>[]) => void;
+    onEdgesChange: (changes: EdgeChange<GraphEdge>[]) => void;
+    onConnect: (connection: NodeConnection) => void;
 }
 
 export interface AppActions {
@@ -53,20 +53,16 @@ export interface GraphState extends NodeState, EdgeState, AppState { }
 export interface GraphActions extends NodeActions, EdgeActions, ReactFlowActions, AppActions { }
 
 export interface GraphHandlers {
-    onNodeClick?: (event: React.MouseEvent, node: any) => void;
-    onNodeDrag?: (event: React.MouseEvent, node: any) => void;
+    onNodeClick?: (event: React.MouseEvent, node: GraphNode) => void;
+    onNodeDrag?: (event: React.MouseEvent, node: GraphNode) => void;
     onPaneClick?: () => void;
-    onConnect?: (connection: any) => void;
-    onConnectEnd?: (
-        event: MouseEvent | TouchEvent,
-        connectionState: { fromNode: { id: string }; isValid: boolean },
-        screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number }
-    ) => void;
-    onNodesChange?: (changes: any[]) => void;
-    onEdgesChange?: (changes: any[]) => void;
-    onEdgeClick?: (event: React.MouseEvent, edge: any) => void;
-    onNodeDragStart?: (event: React.MouseEvent, node: any) => void;
-    onNodeDragStop?: (event: React.MouseEvent, node: any) => void;
+    onConnect: OnConnect;
+    onConnectEnd?: OnConnectEnd;
+    onNodesChange?: (changes: GraphNode[]) => void;
+    onEdgesChange?: (changes: GraphEdge[]) => void;
+    onEdgeClick?: (event: React.MouseEvent, edge: GraphEdge) => void;
+    onNodeDragStart?: (event: React.MouseEvent, node: GraphNode) => void;
+    onNodeDragStop?: (event: React.MouseEvent, node: GraphNode) => void;
 }
 
 // Base types
@@ -97,6 +93,7 @@ export interface NodeData extends Record<string, unknown> {
 export interface EdgeData extends Record<string, unknown> {
     weight?: number;
     isDirected?: boolean;
+    position?: 'top' | 'right' | 'bottom' | 'left';
     label?: string;
     color?: string;
 }
