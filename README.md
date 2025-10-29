@@ -133,8 +133,3 @@ VITE_STORAGE_KEY=graph-editor:v1
 # Debounce time for auto-save (milliseconds)
 VITE_SAVE_DEBOUNCE_MS=800
 ```
-
-
-```
-
-```
