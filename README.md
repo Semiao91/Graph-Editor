@@ -36,7 +36,7 @@ A modern, interactive graph editor built with React, TypeScript, and Vite. Creat
 3. **Create environment file** (optional)
 
    ```bash
-   cp .env.example .env
+   cp .env
    ```
 
    Edit `.env` with your settings:
@@ -45,9 +45,6 @@ A modern, interactive graph editor built with React, TypeScript, and Vite. Creat
    # Storage configuration
    VITE_STORAGE_KEY=graph-editor:v1
    VITE_SAVE_DEBOUNCE_MS=800
-
-   # API configuration (for future use)
-   # VITE_API_URL=http://localhost:3000
    ```
 
 4. **Start development server**
