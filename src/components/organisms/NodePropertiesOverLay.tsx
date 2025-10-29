@@ -2,10 +2,10 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Button, ColorPicker, Input, InputNumber, Space, Typography } from 'antd';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useGraphStore } from '../../store';
+import { toDimension } from '../../utils/toDimention';
 
 const { Title, Text } = Typography;
 
-//todo: REFACTOR CODE
 export const NodePropertiesOverlay = memo(() => {
     const {
         nodes,
@@ -44,8 +44,8 @@ export const NodePropertiesOverlay = memo(() => {
                 label: selectedNode.data?.label || '',
                 color: selectedNode.data?.color || '#f8f9fa',
                 weight: selectedNode.data?.weight ?? 20,
-                width: selectedNode.style?.width || 150,
-                height: selectedNode.style?.height || 80,
+                width: toDimension(selectedNode.style?.width, 150),
+                height: toDimension(selectedNode.style?.height, 80),
             };
             setLocalValues(nodeValues);
             lastSavedValues.current = { ...nodeValues };
@@ -104,7 +104,6 @@ export const NodePropertiesOverlay = memo(() => {
             [field]: value
         }));
 
-        // Debounce the actual save
         debouncedSave(field, value);
     }, [debouncedSave]);
 
@@ -125,10 +124,8 @@ export const NodePropertiesOverlay = memo(() => {
     }, [selectedNodeId, selectedEdgeId, deleteNode, deleteEdge]);
 
     const handleClose = useCallback(() => {
-        // Save any pending changes before closing
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
-            // Force save current values if different from last saved
             Object.keys(localValues).forEach(field => {
                 if (lastSavedValues.current[field] !== localValues[field]) {
                     if (selectedNodeId) {
@@ -283,7 +280,6 @@ export const NodePropertiesOverlay = memo(() => {
             {/* Edge Properties */}
             {selectedEdge && (
                 <Space direction="vertical" style={{ width: '100%' }}>
-                    {/* Basic Info */}
                     <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                         <Text type="secondary">ID: {selectedEdge.id.substring(0, 8)}</Text><br />
                         <Text type="secondary">

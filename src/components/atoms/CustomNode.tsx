@@ -1,4 +1,4 @@
-import { Handle, Position, useConnection } from '@xyflow/react';
+import { Handle, NodeResizer, Position, useConnection } from '@xyflow/react';
 import { memo } from 'react';
 
 interface CustomNodeProps {
@@ -12,7 +12,6 @@ interface CustomNodeProps {
 }
 
 export const CustomNode = memo(({ id, data, selected }: CustomNodeProps) => {
-    console.log('Rendering CustomNode:', id, 'Selected:', selected, 'data', data);
     const connection = useConnection();
     const isTarget = connection.inProgress && connection.fromNode.id !== id;
 
@@ -35,6 +34,7 @@ export const CustomNode = memo(({ id, data, selected }: CustomNodeProps) => {
             transition: 'all 0.2s ease',
             boxSizing: 'border-box',
         }}>
+            {selected && <NodeResizer />}
             {!connection.inProgress && (
                 <Handle
                     position={Position.Right}

@@ -45,8 +45,6 @@ function FloatingEdge({
     const edgeWeight = data?.weight || 1;
     const strokeWidth = Math.max(1, edgeWeight / 5);
     const isDirected = data?.isDirected ?? true;
-
-    // Create custom marker with matching color
     const customMarkerEnd = isDirected ? `url(#arrow-${edgeColor.replace('#', '')})` : undefined;
 
     return (

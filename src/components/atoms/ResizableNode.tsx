@@ -6,7 +6,6 @@ const ResizableNode = ({ data, selected }: { data: ResizableNodeData; selected: 
     const nodeData = data as ResizableNodeData;
     const handles = nodeData.handles || [];
 
-    // Map string position to ReactFlow Position enum
     const getPosition = (pos: string) => {
         switch (pos) {
             case 'top': return Position.Top;

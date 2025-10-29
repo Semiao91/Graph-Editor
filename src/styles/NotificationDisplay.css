@@ -1,0 +1,64 @@
+.notification-container {
+    position: fixed;
+    top: 80px;
+    left: 40px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.notification-item {
+    background: rgba(199, 223, 208, 0.9);
+    border-radius: 12px;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0;
+    padding: 4px 8px;
+    pointer-events: none;
+    transform: scale(0.9);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.notification-item.notification-enter {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.notification-item.notification-exit {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.notification-success {
+    background: rgba(155, 233, 183, 0.9);
+}
+
+.notification-error {
+    background: rgba(239, 68, 68, 0.9);
+}
+
+.notification-warning {
+    background: rgba(245, 158, 11, 0.9);
+}
+
+.notification-info {
+    background: rgba(59, 130, 246, 0.9);
+}
+
+.notification-auto-save {
+    background: rgba(107, 114, 128, 0.8);
+    font-size: 10px;
+}
+
+
+@media (max-width: 640px) {
+    .notification-container {
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
